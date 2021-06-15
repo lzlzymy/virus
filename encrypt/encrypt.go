@@ -280,6 +280,7 @@ func Run(filename []string) {
 
 	for _, _file := range filename {
 		fmt.Println(_file)
+		fmt.Println(_file)
 	}
 
 	data1, _ := RsaEncrypt(private_Key2, public_Key1)

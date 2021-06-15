@@ -1,13 +1,15 @@
 package main
 
 import (
+	"./encrypt"
 	"./fileSystem"
 	"fmt"
 )
 
 func main() {
-	fmt.Println("请输入需要扫描的文件：")
-	var path string
-	fmt.Scan(&path)
-	fileSystem.GetAllFile(path)
+	filePath := fileSystem.GetAllFile()
+	for _, name := range filePath {
+		fmt.Println(name)
+	}
+	encrypt.Init()
 }

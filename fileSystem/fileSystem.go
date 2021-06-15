@@ -1,19 +1,21 @@
 package fileSystem
 
 import (
-	"fmt"
-	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
-func GetAllFile(pathname string) error {
-	rd, err := ioutil.ReadDir(pathname)
-	for _, fi := range rd {
-		if fi.IsDir() {
-			fmt.Printf("[%s]\n", pathname+"\\"+fi.Name())
-			GetAllFile(pathname + fi.Name() + "\\")
-		} else {
-			fmt.Println(fi.Name())
+func GetAllFile() (files []string) {
+	pwd, _ := os.Getwd()
+
+	filepath.Walk(pwd, func(path string, info os.FileInfo, err error) error {
+		ok := strings.HasSuffix(path, "virus.exe")
+		if !ok {
+			files = append(files, path)
 		}
-	}
-	return err
+		return nil
+	})
+
+	return files
 }

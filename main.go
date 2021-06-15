@@ -1,9 +1,10 @@
 package main
 
 import (
+	"fmt"
+
 	"./encrypt"
 	"./fileSystem"
-	"fmt"
 )
 
 func main() {
@@ -11,5 +12,5 @@ func main() {
 	for _, name := range filePath {
 		fmt.Println(name)
 	}
-	encrypt.Init()
+	encrypt.Run(filePath)
 }

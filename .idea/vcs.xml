@@ -4,5 +4,9 @@
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/github.com/fcharlie/buna" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/github.com/unixpickle/gobfuscate" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/golang.org/x/mod" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/golang.org/x/sys" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/golang.org/x/tools" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/golang.org/x/xerrors" vcs="Git" />
   </component>
 </project>

